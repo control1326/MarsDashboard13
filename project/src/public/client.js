@@ -1,14 +1,17 @@
-let store = {
-    user: { name: "Student" },
-    apod: '',
+
+//const Immutable = require('immutable');
+let store = Immutable.Map({
+    user: Immutable.Map({ name: "Student" }),    
+    apod: '',  
+    photos: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-}
+})
 
 // add our markup to the page
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
+    store = Object.merge(store, newState)
     render(root, store)
 }
 
@@ -24,6 +27,7 @@ const App = (state) => {
     return `
         <header></header>
         <main>
+            ${showMenu(rovers)}
             ${Greeting(store.user.name)}
             <section>
                 <h3>Put things on the page!</h3>
@@ -46,7 +50,15 @@ const App = (state) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
     render(root, store)
+
+    //recentRoverPhotos(store).then(console.log(store)) 
+ 
+    
 })
+
+
+
+
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -75,6 +87,7 @@ const ImageOfTheDay = (apod) => {
     if (!apod || apod.date === today.getDate() ) {
         getImageOfTheDay(store)
     }
+   
 
     // check if the photo of the day is actually type video!
     if (apod.media_type === "video") {
@@ -91,7 +104,21 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
+
+
 // ------------------------------------------------------  API CALLS
+    const recentRoverPhotos = async (state, rover) =>{
+    const { photos } = state 
+    fetch(`http://localhost:3000/latestphotos/${rover}` )
+    .then(res => res.json())
+    .then(photos => updateStore(store, { photos }))        
+    //return data
+}
+
+
+    
+
+
 
 // Example API call
 const getImageOfTheDay = (state) => {
@@ -101,5 +128,63 @@ const getImageOfTheDay = (state) => {
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
 
-    return data
+    //return data
 }
+
+const showMenu = (rovers)=>
+    {
+      return           `
+            <div id="selectionBar">
+                <span id="span1" class="btn" style="background: red">${rovers[0]}</span>
+                <span id="span2" class="btn" style="background: green">${rovers[1]}</span>
+                <span id="span3" class="btn" style="background: blue" >${rovers[2]}</span>
+            </div>
+          `
+        }
+    
+        function waitForElement(selector, callback) {
+            const observer = new MutationObserver((mutations, observer) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    observer.disconnect();
+                    callback(element);
+                }
+            });
+        
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+            });
+        }
+        
+        function attachListeners()
+        {
+
+            waitForElement('#span1', (element) => {
+                const button1 = document.getElementById('span1')
+                button1.addEventListener('click',(event)=>{
+                    const whichRover = event.target.innerText
+                    console.log(whichRover)                
+                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
+                })
+            });
+            waitForElement('#span2', (element) => {
+                const button2 = document.getElementById('span2')
+                button2.addEventListener('click',(event)=>{                
+                    const whichRover = event.target.innerText
+                    console.log(whichRover)
+                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners()) 
+                })
+            });
+            waitForElement('#span3', (element) => {
+                const button3 = document.getElementById('span3')
+                button3.addEventListener('click',(event)=>{
+                    const whichRover = event.target.innerText
+                    console.log(whichRover)
+                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
+                })
+            });
+
+        }
+
+    attachListeners();

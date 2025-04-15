@@ -36,3 +36,29 @@ footer {
 @media (min-width: 1824px) {
   /* use mobile */
 }
+
+#selectionBar
+{
+    /* border: 1px  solid lime; */
+    text-align: center; 
+    display: table;
+    border: 1px solid black;
+    width: 100%;
+}
+
+#selectionBar  > * {
+  display: table-cell;
+  width: 33.33%;
+}
+
+.btn
+{
+    background-color: rgb(7, 55, 99);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 2px 12px 3px 12px;
+    text-decoration: none;
+
+}
+

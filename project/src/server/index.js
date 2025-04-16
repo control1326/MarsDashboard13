@@ -50,13 +50,13 @@ async function displayMostRecentPhotos(rover) {
 
 displayMostRecentPhotos(roverName); */
 
-app.get('/latestphotos/:dynamic', async (req, res) => {
+app.get('/latestphotos/:rover', async (req, res) => {
     try {
-        const {dynamic} = req.params
-        const photos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${dynamic}/latest_photos?api_key=${process.env.API_KEY}`)
+        const {rover} = req.params
+        const latest_photos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/latest_photos?api_key=${process.env.API_KEY}`)
           .then(res => res.json())
           .then()
-        res.send( {photos})
+        res.send({latest_photos} )
     } catch (err) {
         console.log('error:', err);
     }

@@ -1,19 +1,50 @@
 
-//const Immutable = require('immutable');
-let store = Immutable.Map({
-    user: Immutable.Map({ name: "Student" }),    
+
+
+let store = {  
     apod: '',  
-    photos: '',
-    rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-})
+    latest_photos:'',
+    rovers: ['Curiosity', 'Opportunity', 'Spirit']
+}
+
+
 
 // add our markup to the page
 const root = document.getElementById('root')
 
-const updateStore = (store, newState) => {
-    store = Object.merge(store, newState)
+
+
+const updateStore = (state, newState) => {
+
+
+    if (newState.hasOwnProperty("latest_photos"))
+    {
+        
+         
+        const {latest_photos} = newState.latest_photos.latest_photos
+        //console.log(latest_photos) 
+        const mappedPhotos = mapPhotos(latest_photos)
+        //console.log(mappedPhotos)
+        const newMappedPhotos = {latest_photos:''}
+        newMappedPhotos.latest_photos = mappedPhotos
+        //console.log(newMappedPhotos)
+
+        store = Object.assign(state, newMappedPhotos)
+    }
+    else
+    {        
+        store = Object.assign(state, newState)
+    } 
+    
     render(root, store)
+
+    
 }
+
+const mapPhotos = (photos) => photos.map(({img_src,earth_date}) => ({img_src, earth_date}))
+
+
+
 
 const render = async (root, state) => {
     root.innerHTML = App(state)
@@ -22,13 +53,15 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { rovers, apod } = state
+    
+
+    const { rovers, apod } = state
+ 
 
     return `
         <header></header>
         <main>
-            ${showMenu(rovers)}
-            ${Greeting(store.user.name)}
+            ${showMenu(rovers)}           
             <section>
                 <h3>Put things on the page!</h3>
                 <p>Here is an example section.</p>
@@ -51,10 +84,7 @@ const App = (state) => {
 window.addEventListener('load', () => {
     render(root, store)
 
-    //recentRoverPhotos(store).then(console.log(store)) 
- 
-    
-})
+ })
 
 
 
@@ -84,7 +114,7 @@ const ImageOfTheDay = (apod) => {
     console.log(photodate.getDate(), today.getDate());
 
     console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate() ) {
+    if (!apod || apod.date=== today.getDate() ) {
         getImageOfTheDay(store)
     }
    
@@ -108,10 +138,10 @@ const ImageOfTheDay = (apod) => {
 
 // ------------------------------------------------------  API CALLS
     const recentRoverPhotos = async (state, rover) =>{
-    const { photos } = state 
+    let { latest_photos } = state 
     fetch(`http://localhost:3000/latestphotos/${rover}` )
-    .then(res => res.json())
-    .then(photos => updateStore(store, { photos }))        
+    .then(res => res.json()) 
+    .then(latest_photos => updateStore(store, { latest_photos} )) 
     //return data
 }
 
@@ -125,14 +155,16 @@ const getImageOfTheDay = (state) => {
     let { apod } = state
 
     fetch(`http://localhost:3000/apod`)
-        .then(res => res.json())
+        .then(res => res.json()) 
         .then(apod => updateStore(store, { apod }))
+        
 
     //return data
 }
 
 const showMenu = (rovers)=>
     {
+        
       return           `
             <div id="selectionBar">
                 <span id="span1" class="btn" style="background: red">${rovers[0]}</span>
@@ -163,8 +195,7 @@ const showMenu = (rovers)=>
             waitForElement('#span1', (element) => {
                 const button1 = document.getElementById('span1')
                 button1.addEventListener('click',(event)=>{
-                    const whichRover = event.target.innerText
-                    console.log(whichRover)                
+                    const whichRover = event.target.innerText        
                     recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
                 })
             });
@@ -172,7 +203,6 @@ const showMenu = (rovers)=>
                 const button2 = document.getElementById('span2')
                 button2.addEventListener('click',(event)=>{                
                     const whichRover = event.target.innerText
-                    console.log(whichRover)
                     recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners()) 
                 })
             });
@@ -180,7 +210,6 @@ const showMenu = (rovers)=>
                 const button3 = document.getElementById('span3')
                 button3.addEventListener('click',(event)=>{
                     const whichRover = event.target.innerText
-                    console.log(whichRover)
                     recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
                 })
             });

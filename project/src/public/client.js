@@ -4,7 +4,8 @@
 let store = {  
     apod: '',  
     latest_photos:'',
-    rovers: ['Curiosity', 'Opportunity', 'Spirit']
+    rovers: ['Curiosity', 'Perseverance' /*'Opportunity', 'Spirit'*/],
+    clickedRover: ''
 }
 
 
@@ -55,29 +56,46 @@ const render = async (root, state) => {
 const App = (state) => {
     
 
-    const { rovers, apod } = state
+    const { rovers, apod, latest_photos, clickedRover } = state
  
+    console.log('App function')
+    console.log(latest_photos)
 
+    if (latest_photos.length === 0)
+    {
     return `
         <header></header>
         <main>
             ${showMenu(rovers)}           
             <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
+                <h3>This is the Latest Photos from NASA Mars Rover Application ...</h3>
+                <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
                 <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
+                    One of the most popular websites at NASA is the Astronomy Picture of the Day. 
                 </p>
-                ${ImageOfTheDay(apod)}
+                <img src="https://apod.nasa.gov/apod/image/2504/CatsEyeWide_Niittee_960.jpg" height="350px" width="100%">
+                ${RoverLatestPhotos(latest_photos)}
             </section>
         </main>
         <footer></footer>
     `
+    }
+    else
+    {
+        return `
+        <header></header>
+        <main>
+            ${showMenu(rovers)}           
+            <section>
+                <h3>This is an Application to show the Latest Photos from a NASA Mars Rover  ...</h3>
+                <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
+                ${RoverLatestPhotos(latest_photos)}
+            </section>
+        </main>
+        <footer></footer>
+    `        
+    }        
+
 }
 
 // listening for load event because page should load before any JS is called
@@ -92,18 +110,6 @@ window.addEventListener('load', () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-    if (name) {
-        return `
-            <h1>Welcome, ${name}!</h1>
-        `
-    }
-
-    return `
-        <h1>Hello!</h1>
-    `
-}
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
@@ -111,9 +117,9 @@ const ImageOfTheDay = (apod) => {
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date()
     const photodate = new Date(apod.date)
-    console.log(photodate.getDate(), today.getDate());
+    //console.log(photodate.getDate(), today.getDate());
 
-    console.log(photodate.getDate() === today.getDate());
+    //console.log(photodate.getDate() === today.getDate());
     if (!apod || apod.date=== today.getDate() ) {
         getImageOfTheDay(store)
     }
@@ -131,6 +137,31 @@ const ImageOfTheDay = (apod) => {
             <img src="${apod.image.url}" height="350px" width="100%" />
             <p>${apod.image.explanation}</p>
         `)
+    }
+}
+
+const RoverLatestPhotos = (latest_photos) => {
+
+    console.log('rlp')
+    console.log(latest_photos)
+       
+    // latest photo for rover exists
+    if (latest_photos.length > 0 ) {
+        let pics = ''
+        latest_photos.forEach(photo => {
+                pics += 
+                (`
+                <div class="responsive">
+                    <div class="gallery">
+                       <img src="${photo.img_src}"  width="600" height="400">
+                    </div>
+                </div>
+                `)                                   
+            });
+        return pics            
+    } else {
+        return (`            
+                `)
     }
 }
 
@@ -168,8 +199,7 @@ const showMenu = (rovers)=>
       return           `
             <div id="selectionBar">
                 <span id="span1" class="btn" style="background: red">${rovers[0]}</span>
-                <span id="span2" class="btn" style="background: green">${rovers[1]}</span>
-                <span id="span3" class="btn" style="background: blue" >${rovers[2]}</span>
+                <span id="span2" class="btn" style="background: green">${rovers[1]}</span>                
             </div>
           `
         }
@@ -189,31 +219,42 @@ const showMenu = (rovers)=>
             });
         }
         
+        // Event handlers for all 3 buttons
         function attachListeners()
         {
 
             waitForElement('#span1', (element) => {
                 const button1 = document.getElementById('span1')
                 button1.addEventListener('click',(event)=>{
-                    const whichRover = event.target.innerText        
-                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
+                    const whichRover = event.target.innerText                            
+                    recentRoverPhotos(store, whichRover)
+                    .then(putRoverInStore(whichRover))
+                    .then(render(root, store))
+                    .then(attachListeners())                    
                 })
             });
             waitForElement('#span2', (element) => {
                 const button2 = document.getElementById('span2')
                 button2.addEventListener('click',(event)=>{                
                     const whichRover = event.target.innerText
-                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners()) 
-                })
-            });
-            waitForElement('#span3', (element) => {
-                const button3 = document.getElementById('span3')
-                button3.addEventListener('click',(event)=>{
-                    const whichRover = event.target.innerText
-                    recentRoverPhotos(store, whichRover).then(console.log(store)).then(attachListeners())
+                    recentRoverPhotos(store, whichRover)
+                    .then(putRoverInStore(whichRover))
+                    .then(render(root, store))                    
+                    .then(attachListeners()) 
                 })
             });
 
         }
 
+    // Call attachment of event handlers for buttons
     attachListeners();
+
+    const putRoverInStore = (clickedRover)=>{
+
+        let clickedRoverObj = {clickedRover: ''}
+        clickedRoverObj.clickedRover = clickedRover
+
+        updateStore(store, clickedRoverObj)
+    }
+
+    //<img src="${apod.image.url}" height="350px" width="100%" />

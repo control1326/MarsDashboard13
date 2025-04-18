@@ -94,6 +94,16 @@ div.desc {
   width: 24.99999%;
 }
 
+.fitImg{
+  object-fit: cover;
+}
+
+.roverInfo{
+  margin-bottom: 20px;
+  color:darkcyan ;
+  font-weight: bold;
+}
+
 @media only screen and (max-width: 700px) {
   .responsive {
     width: 49.99999%;

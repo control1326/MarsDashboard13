@@ -5,7 +5,9 @@ let store = {
     apod: '',  
     latest_photos:'',
     rovers: ['Curiosity', 'Perseverance' /*'Opportunity', 'Spirit'*/],
-    clickedRover: ''
+    clickedRover: '',
+    rover: ''
+
 }
 
 
@@ -21,16 +23,31 @@ const updateStore = (state, newState) => {
     if (newState.hasOwnProperty("latest_photos"))
     {
         
-         
+        // Get nested object latest photos. 
         const {latest_photos} = newState.latest_photos.latest_photos
-        //console.log(latest_photos) 
+        // Map only the image and the date.
         const mappedPhotos = mapPhotos(latest_photos)
-        //console.log(mappedPhotos)
-        const newMappedPhotos = {latest_photos:''}
-        newMappedPhotos.latest_photos = mappedPhotos
-        //console.log(newMappedPhotos)
+        // Make a new object to store latest photos & rover info.
+        const newMappedPhotos = 
+        {
+            latest_photos:'',
+            rover: ''
+        }
+        newMappedPhotos.latest_photos = mappedPhotos        
+        
+        // map rover objects to an array.
+        const mappedRovers = mapRovers(latest_photos)
+        
+        // Reduce rover objects to one object b/c they are all the same per each API call. 
+        const reducedRover = reduceRover(mappedRovers)
+
+
+        newMappedPhotos.rover = reducedRover
+
 
         store = Object.assign(state, newMappedPhotos)
+
+        console.log(store)
     }
     else
     {        
@@ -42,7 +59,14 @@ const updateStore = (state, newState) => {
     
 }
 
-const mapPhotos = (photos) => photos.map(({img_src,earth_date}) => ({img_src, earth_date}))
+const mapPhotos = (photos) => photos.map(({img_src,earth_date,rover}) => ({img_src, earth_date,rover}))
+
+const mapRovers = (rovers) => rovers.map(({rover}) => (rover))
+
+
+const reduceRover = (mappedRovers) => mappedRovers.reduce((prev, curr,i) =>{
+    return curr   
+}) 
 
 
 
@@ -56,10 +80,10 @@ const render = async (root, state) => {
 const App = (state) => {
     
 
-    const { rovers, apod, latest_photos, clickedRover } = state
+    const { rovers, apod, latest_photos, clickedRover,rover } = state
  
-    console.log('App function')
-    console.log(latest_photos)
+    // console.log('App function')
+    // console.log(latest_photos)
 
     if (latest_photos.length === 0)
     {
@@ -89,6 +113,7 @@ const App = (state) => {
             <section>
                 <h3>This is an Application to show the Latest Photos from a NASA Mars Rover  ...</h3>
                 <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
+                <p class="roverInfo">Rover: ${rover.name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Launched: ${new Date(rover.launch_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Landed: ${new Date(rover.landing_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status: ${rover.status}</p>  
                 ${RoverLatestPhotos(latest_photos)}
             </section>
         </main>
@@ -142,8 +167,6 @@ const ImageOfTheDay = (apod) => {
 
 const RoverLatestPhotos = (latest_photos) => {
 
-    console.log('rlp')
-    console.log(latest_photos)
        
     // latest photo for rover exists
     if (latest_photos.length > 0 ) {
@@ -153,7 +176,7 @@ const RoverLatestPhotos = (latest_photos) => {
                 (`
                 <div class="responsive">
                     <div class="gallery">
-                       <img src="${photo.img_src}"  width="600" height="400">
+                       <img class="fitImg" src="${photo.img_src}"  width="600" height="400">
                     </div>
                 </div>
                 `)                                   

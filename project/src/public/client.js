@@ -93,7 +93,7 @@ const App = (state) => {
         <main>
             ${showMenu(rovers)}           
             <section>
-                <h3>This is the Latest Photos from NASA Mars Rover Application ...</h3>
+                <h3>Welcome to this Latest Photos from NASA Mars Rover Website ...</h3>
                 <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. 
@@ -112,9 +112,9 @@ const App = (state) => {
         <main>
             ${showMenu(rovers)}           
             <section>
-                <h3>This is an Application to show the Latest Photos from a NASA Mars Rover  ...</h3>
+                <h3>Welcome to this Latest Photos from NASA Mars Rover Website ...</h3>
                 <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
-                <p class="roverInfo">Rover: ${rover.name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Launched: ${new Date(rover.launch_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Landed: ${new Date(rover.landing_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status: ${rover.status}</p>  
+                <p class="roverInfo">Rover: ${rover.name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break" >Launched: ${new Date(rover.launch_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Landed: ${new Date(rover.landing_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Status: ${rover.status}</p>  
                 ${RoverLatestPhotos(latest_photos)}
             </section>
         </main>

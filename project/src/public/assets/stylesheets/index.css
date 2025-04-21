@@ -94,6 +94,8 @@ div.desc {
   width: 24.99999%;
 }
 
+.mobile-break {display: none;}
+
 .fitImg{
   object-fit: cover;
 }
@@ -109,12 +111,16 @@ div.desc {
     width: 49.99999%;
     margin: 6px 0;
   }
+  .mobile-break {display: inherit}
+
 }
 
 @media only screen and (max-width: 500px) {
   .responsive {
     width: 100%;
   }
+  .mobile-break {display: inherit}
+  
 }
 
 .clearfix:after {

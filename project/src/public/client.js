@@ -1,5 +1,5 @@
 
-
+document.title = 'Mars Rover Photos'
 
 let store = {  
     apod: '',  
@@ -9,6 +9,7 @@ let store = {
     rover: ''
 
 }
+
 
 
 
@@ -25,7 +26,7 @@ const updateStore = (state, newState) => {
         
         // Get nested object latest photos. 
         const {latest_photos} = newState.latest_photos.latest_photos
-        // Map only the image and the date.
+        // Map only the age and the date.
         const mappedPhotos = mapPhotos(latest_photos)
         // Make a new object to store latest photos & rover info.
         const newMappedPhotos = 
@@ -165,14 +166,21 @@ const RoverLatestPhotos = (latest_photos) => {
 
 
 // ------------------------------------------------------  API CALLS
-    const recentRoverPhotos = async (state, rover) =>{
+ /*    const recentRoverPhotos = async (state, rover) =>{
     let { latest_photos } = state 
     fetch(`http://localhost:3000/latestphotos/${rover}` )
     .then(res => res.json()) 
     .then(latest_photos => updateStore(store, { latest_photos} )) 
     //return data
-}
+} */
 
+    const recentRoverPhotos = async (state, rover) =>{
+    let { latest_photos } = state 
+    fetch(`https://project-broken-flower-2755.fly.dev/latestphotos/${rover}` )
+    .then(res => res.json()) 
+    .then(latest_photos => updateStore(store, { latest_photos} )) 
+    //return data
+}
 
     
 

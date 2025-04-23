@@ -6,7 +6,8 @@ let store = {
     latest_photos:'',
     rovers: ['Curiosity', 'Perseverance' /*'Opportunity', 'Spirit'*/],
     clickedRover: '',
-    rover: ''
+    rover: '',
+    photoDate: ''
 
 }
 
@@ -28,13 +29,18 @@ const updateStore = (state, newState) => {
         const {latest_photos} = newState.latest_photos.latest_photos
         // Map only the age and the date.
         const mappedPhotos = mapPhotos(latest_photos)
+        // Get date of photos.
+        const photoDate = reducePhotoDate(latest_photos)
+
         // Make a new object to store latest photos & rover info.
         const newMappedPhotos = 
         {
             latest_photos:'',
-            rover: ''
+            rover: '',
+            photoDate: ''
         }
-        newMappedPhotos.latest_photos = mappedPhotos        
+        newMappedPhotos.latest_photos = mappedPhotos       
+        newMappedPhotos.photoDate = photoDate 
         
         // map rover objects to an array.
         const mappedRovers = mapRovers(latest_photos)
@@ -62,8 +68,11 @@ const updateStore = (state, newState) => {
 
 const mapPhotos = (photos) => photos.map(({img_src,earth_date,rover}) => ({img_src, earth_date,rover}))
 
-const mapRovers = (rovers) => rovers.map(({rover}) => (rover))
+const reducePhotoDate = (mappedPhotos) => mappedPhotos.reduce((prev, curr,i) =>{
+    return curr.earth_date   
+}) 
 
+const mapRovers = (rovers) => rovers.map(({rover}) => (rover))
 
 const reduceRover = (mappedRovers) => mappedRovers.reduce((prev, curr,i) =>{
     return curr   
@@ -81,7 +90,7 @@ const render = async (root, state) => {
 const App = (state) => {
     
 
-    const { rovers, apod, latest_photos, clickedRover,rover } = state
+    const { rovers, apod, latest_photos, clickedRover,rover, photoDate } = state
  
     // console.log('App function')
     // console.log(latest_photos)
@@ -114,7 +123,8 @@ const App = (state) => {
             <section>
                 <h3>Welcome to this Latest Photos from NASA Mars Rover Website ...</h3>
                 <p class="userPrompt">Click a button above to see the latest photos from a rover.</p>
-                <p class="roverInfo">Rover: ${rover.name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break" >Launched: ${new Date(rover.launch_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Landed: ${new Date(rover.landing_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Status: ${rover.status}</p>  
+                <p class="roverInfo">Rover: ${rover.name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break" >Launched: ${new Date(rover.launch_date).toLocaleDateString()}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Landed: ${new Date(rover.landing_date).toLocaleDateString()}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Status: ${rover.status}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br class="mobile-break">Photo Date: ${new Date(photoDate).toLocaleDateString()}</p>  
                 ${RoverLatestPhotos(latest_photos)}
             </section>
         </main>
@@ -166,7 +176,7 @@ const RoverLatestPhotos = (latest_photos) => {
 
 
 // ------------------------------------------------------  API CALLS
- /*    const recentRoverPhotos = async (state, rover) =>{
+/*     const recentRoverPhotos = async (state, rover) =>{
     let { latest_photos } = state 
     fetch(`http://localhost:3000/latestphotos/${rover}` )
     .then(res => res.json()) 

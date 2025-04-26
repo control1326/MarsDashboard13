@@ -54,7 +54,7 @@ const updateStore = (state, newState) => {
 
         store = Object.assign(state, newMappedPhotos)
 
-        console.log(store)
+        //console.log(store)
     }
     else
     {        
@@ -92,8 +92,6 @@ const App = (state) => {
 
     const { rovers, apod, latest_photos, clickedRover,rover, photoDate } = state
  
-    // console.log('App function')
-    // console.log(latest_photos)
 
     if (latest_photos.length === 0)
     {
@@ -107,7 +105,8 @@ const App = (state) => {
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. 
                 </p>
-                <img src="https://apod.nasa.gov/apod/image/2504/CatsEyeWide_Niittee_960.jpg" height="350px" width="100%">
+                <!--<img src="https://apod.nasa.gov/apod/image/2504/CatsEyeWide_Niittee_960.jpg" height="350px" width="100%">-->
+                ${ImageOfTheDay(apod)}
                 ${RoverLatestPhotos(latest_photos)}
             </section>
         </main>
@@ -207,7 +206,7 @@ const showMenu = (rovers)=>
                 <span id="span2" class="btn" style="background: green">${rovers[1]}</span>                
             </div>
           `
-        }
+    }
     
         function waitForElement(selector, callback) {
             const observer = new MutationObserver((mutations, observer) => {
@@ -262,4 +261,58 @@ const showMenu = (rovers)=>
         updateStore(store, clickedRoverObj)
     }
 
+
+    const ImageOfTheDay = (apod) => {
+
+        // If image does not already exist, or it is not from today -- request it again
+        const today = new Date()
+        const photodate = new Date(apod.date)
+        //console.log(store.apod)
+        //console.log(photodate.getDate(), today.getDate());
+    
+        //console.log(photodate.getDate() === today.getDate());
+        if (!apod || apod.date === today.getDate() ) {
+            getImageOfTheDay(store)
+        }
+    
+        // check if the photo of the day is actually type video!
+        if (apod.media_type === "video") {
+            return (`
+                <p>See today's featured video <a href="${apod.url}">here</a></p>
+                <p>${apod.title}</p>
+                <p>${apod.explanation}</p>
+            `)
+        } else {
+            return (`
+                <img src="${apod.image.url}" height="350px" width="100%" />
+                <p>${apod.image.explanation}</p>
+            `)
+        }
+    }
+    
+    // ------------------------------------------------------  API CALLS
+    
+    // Example API call
+    const getImageOfTheDay = (state) => {
+        let { apod } = state
+    
+        fetch(`https://project-broken-flower-2755.fly.dev/apod`)
+            .then(res => res.json())
+            .then(apod => updateStore(store, { apod }))
+    
+        //return data
+    }
+    
+
+  /*   const getImageOfTheDay = (state) => {
+        let { apod } = state
+    
+        fetch(`http://localhost:3000/apod`)
+            .then(res => res.json())
+            .then(apod => updateStore(store, { apod }))
+    
+        // return data
+    } */
+    
+    
     //<img src="${apod.image.url}" height="350px" width="100%" />

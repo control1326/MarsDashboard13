@@ -173,34 +173,37 @@ const RoverLatestPhotos = (latest_photos) => {
 }
 
 
-
 // ------------------------------------------------------  API CALLS
-/*     const recentRoverPhotos = async (state, rover) =>{
-    let { latest_photos } = state 
-    fetch(`http://localhost:3000/latestphotos/${rover}` )
-    .then(res => res.json()) 
-    .then(latest_photos => updateStore(store, { latest_photos} )) 
-    //return data
-} */
+let recentRoverPhotos;
 
-    const recentRoverPhotos = async (state, rover) =>{
-    let { latest_photos } = state 
-    fetch(`https://project-broken-flower-2755.fly.dev/latestphotos/${rover}` )
-    .then(res => res.json()) 
-    .then(latest_photos => updateStore(store, { latest_photos} )) 
-    //return data
-}
+        recentRoverPhotos = async (state, rover) =>{
+        let { latest_photos } = state 
+        fetch(`https://project-broken-flower-2755.fly.dev/latestphotos/${rover}` )
+        .then(res => res.json()) 
+        .then(latest_photos => updateStore(store, { latest_photos} )) 
+        //return data
+    }
+
+/*         recentRoverPhotos = async (state, rover) =>{
+        let { latest_photos } = state 
+        fetch(`http://localhost:3000/latestphotos/${rover}` )
+        .then(res => res.json()) 
+        .then(latest_photos => updateStore(store, { latest_photos} )) 
+        //return data
+    } */
+
+
 
     
-
-
-
-
 
 const showMenu = (rovers)=>
     {
         
       return           `
+            <div id="#homeButton">
+                <span id="spanHome" class="btn" style="background: darkcyan">Home</span>
+            </div>
+            <br>
             <div id="selectionBar">
                 <span id="span1" class="btn" style="background: red">${rovers[0]}</span>
                 <span id="span2" class="btn" style="background: green">${rovers[1]}</span>                
@@ -208,20 +211,20 @@ const showMenu = (rovers)=>
           `
     }
     
-        function waitForElement(selector, callback) {
-            const observer = new MutationObserver((mutations, observer) => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    observer.disconnect();
-                    callback(element);
-                }
-            });
-        
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-            });
-        }
+    function waitForElement(selector, callback) {
+        const observer = new MutationObserver((mutations, observer) => {
+            const element = document.querySelector(selector);
+            if (element) {
+                observer.disconnect();
+                callback(element);
+            }
+        });
+    
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
         
         // Event handlers for all 3 buttons
         function attachListeners()
@@ -247,6 +250,14 @@ const showMenu = (rovers)=>
                     .then(attachListeners()) 
                 })
             });
+            waitForElement('#spanHome', (element) => {
+                const buttonHome = document.getElementById('spanHome')
+                buttonHome.addEventListener('click',(event)=>{
+                    window.location.href = window.location.href                 
+                    attachListeners()
+                })
+            });
+
 
         }
 
@@ -272,15 +283,17 @@ const showMenu = (rovers)=>
     
         //console.log(photodate.getDate() === today.getDate());
         if (!apod || apod.date === today.getDate() ) {
+            console.log()
             getImageOfTheDay(store)
         }
-    
+        
         // check if the photo of the day is actually type video!
-        if (apod.media_type === "video") {
+        if (apod == null) return null
+        if (apod.image.media_type === "video") {
             return (`
-                <p>See today's featured video <a href="${apod.url}">here</a></p>
-                <p>${apod.title}</p>
-                <p>${apod.explanation}</p>
+                <p>See today's featured video <a href="${apod.image.url}">here</a></p>
+                <p>${apod.image.title}</p>
+                <p>${apod.image.explanation}</p>
             `)
         } else {
             return (`
@@ -292,27 +305,25 @@ const showMenu = (rovers)=>
     
     // ------------------------------------------------------  API CALLS
     
-    // Example API call
-    const getImageOfTheDay = (state) => {
-        let { apod } = state
+    let getImageOfTheDay;
     
-        fetch(`https://project-broken-flower-2755.fly.dev/apod`)
+        getImageOfTheDay = (state) => {
+        let { apod } = state
+            
+             fetch(`https://project-broken-flower-2755.fly.dev/apod`)
             .then(res => res.json())
             .then(apod => updateStore(store, { apod }))
     
-        //return data
-    }
-    
-
-  /*   const getImageOfTheDay = (state) => {
+        }
+ 
+/*         getImageOfTheDay = (state) => {
         let { apod } = state
     
         fetch(`http://localhost:3000/apod`)
             .then(res => res.json())
             .then(apod => updateStore(store, { apod }))
+ 
     
-        // return data
     } */
+   
     
-    
-    //<img src="${apod.image.url}" height="350px" width="100%" />

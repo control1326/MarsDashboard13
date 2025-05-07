@@ -46,6 +46,11 @@ footer {
     width: 100%;
 }
 
+#homeButton  > * {
+  display: table-cell;
+  width: 20%;
+}
+
 #selectionBar  > * {
   display: table-cell;
   width: 50%;

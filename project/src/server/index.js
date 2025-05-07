@@ -1,4 +1,6 @@
+
 //require('dotenv').config();
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const fetch = require('node-fetch')
@@ -6,7 +8,14 @@ const path = require('path')
 //const Immutable = require('immutable'); 
 
 const app = express()
-//const port = 3000
+
+let port;
+if (process.env.NODE_ENV =='production'){
+    port = process.env.port || 3000;
+} 
+else{
+    port = 3000
+}
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -40,13 +49,16 @@ app.get('/apod', async (req, res) => {
     }
 })
 
-const hostname = "0.0.0.0";
-const port = process.env.port || 3000;
+if (process.env.NODE_ENV == 'production'){
+    const hostname = "0.0.0.0";
+    app.listen(port, hostname, () => {
+     console.log(`Server running at http://${hostname}:${port}/`);
+    });
+}
+else{
+    app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+}
+ 
 
 
-// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
-app.listen(port, hostname, () => {
- console.log(`Server running at http://${hostname}:${port}/`);
-});
 
